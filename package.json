@@ -20,7 +20,7 @@
     "hub"
   ],
   "author": "Dr. Jan-Jan van der Vyver <jan.jan.code@gmail.com>",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "crypto": "^0.0.3",
     "debug": "^2.6.8",
