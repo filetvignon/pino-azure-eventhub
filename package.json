@@ -1,0 +1,43 @@
+{
+  "name": "pino-eventhub",
+  "version": "0.0.1",
+  "description": "Pipe pino logs to Azure Event Hub",
+  "main": "pino-eventhub",
+  "bin": {
+    "pino-eventhub": "./pino-eventhub.js"
+  },
+  "scripts": {
+    "start": "node pino-eventhub.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "pino",
+    "log",
+    "fast",
+    "azure",
+    "eventhub",
+    "event",
+    "hub"
+  ],
+  "author": "Dr. Jan-Jan van der Vyver <jan.jan.code@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "crypto": "^0.0.3",
+    "debug": "^2.6.8",
+    "fs": "^0.0.1-security",
+    "https": "^1.0.0",
+    "minimist": "^1.2.0",
+    "pump": "^1.0.2",
+    "readable-stream": "^2.3.3",
+    "split2": "^2.1.1",
+    "utf8": "^2.1.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pinojs/pino-eventhub.git"
+  },
+  "bugs": {
+    "url": "https://github.com/pinojs/pino-eventhub/issues"
+  },
+  "homepage": "https://github.com/pinojs/pino-eventhub#readme"
+}

@@ -1,0 +1,19 @@
+
+  [0m[37m[1m[4mpino-elasticsearch[22m[39m[0m
+
+  [0mTo send [33mpino[39m logs to elasticsearch:[0m
+
+     [33mcat log | pino-elasticsearch -[39m
+
+  Key variables can be set as flags or environment variables.
+
+  [36m[1mFlags[22m[39m
+  [0m-h  | --help                    Display Help
+  -v  | --version                    display Version
+  -s  | --event-hub-namespace        Required: the Event Hub Namespace; env var PINO_EVENT_HUB_NAMESPACE
+  -e  | --event-hub                  Required: the Event Hub; env var PINO_EVENT_HUB
+  -n  | --shared-access-policy-name  Required: the Shared Access Policy Name; env var PINO_SHARED_ACCESS_POLICY_NAME
+  -a  | --sas                        the Shared Access Signature; env var PINO_SHARED_ACCESS_SIGNATURE
+  -x  | --expiry                     the expiry of the SAS, in unix time; env var PINO_SAS_EXPIRY; default 1 week from now
+
+  -k  | --shared-access-policy-key   the Shared Access Policy Key; env var PINO_SHARED_ACCESS_POLICY_KEY
