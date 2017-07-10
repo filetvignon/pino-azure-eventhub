@@ -85,11 +85,10 @@ function pinoEventHub (opts) {
       const events = lines
         .map(line => {
           // check if console output is a string or object
-          var parsed = new Parse(line)
-          if (parsed.err) {
-            return `{"Body":"${line}"}`
-          }
-          return `{"Body":${line}}`
+          const parsed = new Parse(line)
+          return (parsed.err)
+            ? JSON.stringify({ Body: line })
+            : `{"Body":${line}}`
         })
         .join(',')
       debug(`events =`, events)
