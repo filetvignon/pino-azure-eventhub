@@ -11,6 +11,7 @@ const utf8 = require('utf8')
 const crypto = require('crypto')
 const https = require('https')
 const debug = require('debug')('pino-eventhub')
+const Parse = require('fast-json-parse')
 
 function giveSecurityWarning () {
   console.warn("It is poor security practice to share your Shared Access Policy Key. It is better to calculate the Shared Access Signature, and share that.")
@@ -22,9 +23,9 @@ function createSignature (uri, ttl, sapk, warn) {
     giveSecurityWarning()
   }
 
-  var signature = uri + '\n' + ttl
-  var signatureUTF8 = utf8.encode(signature)
-  var hash = crypto.createHmac('sha256', sapk)
+  const signature = uri + '\n' + ttl
+  const signatureUTF8 = utf8.encode(signature)
+  const hash = crypto.createHmac('sha256', sapk)
     .update(signatureUTF8)
     .digest('base64')
   return encodeURIComponent(hash)
@@ -35,17 +36,22 @@ function pinoEventHub (opts) {
     return line
   })
 
-  var url = decodeURIComponent(opts.sr) + '/messages'
-  var options = {
+  const url = decodeURIComponent(opts.sr) + '/messages'
+  const options = {
     method: 'POST',
     host: opts.host.slice(8), // remove 'https://'
     port: opts.port,
-    path: '/' + opts.eh + '/messages',
+    path: '/' + opts.eh + '/messages?timeout=60&api-version=2014-01',
     headers: {
       Authorization: 'SharedAccessSignature sr=' + opts.sr + '&sig=' + opts.sig + '&se=' + opts.se + '&skn=' + opts.skn,
       'Content-Type': 'application/atom+xml;type=entry;charset=utf-8',
     }
   }
+
+  const bulkHeaders = Object.assign({}, options.headers,
+    { 'Content-Type': 'application/vnd.microsoft.servicebus.json' })
+  const bulkOptions = Object.assign({}, options,
+    { headers: bulkHeaders })
 
   function callback(done) {
     return function inner(response) {
@@ -53,6 +59,7 @@ function pinoEventHub (opts) {
       debug('response.statusMessage =', response.statusMessage)
 
       if (response.statusCode != 201) {
+        // splitter.emit(`response error =`, response.statusMessage)
         console.log(`response error =`, response.statusMessage)
       }
 
@@ -67,19 +74,43 @@ function pinoEventHub (opts) {
     }
   }
 
+  const index = opts.index || 'pino'
+  const type = opts.type || 'log'
+
   const writable = new Writable({
     objectMode: true,
     highWaterMark: opts['bulk-size'] || 500,
-    write: function (body, enc, done) {
-      debug(`write: body =`, body)
-      debug(`write: typeof ===`, typeof body)
-      if (body) {
-        var req = https.request(options, callback(done))
+    writev: function (lines, done) {
+      // https://docs.microsoft.com/en-us/rest/api/eventhub/send-batch-events
+      const events = lines
+        .map(line => {
+          // check if console output is a string or object
+          const parsed = new Parse(line)
+          return (parsed.err)
+            ? JSON.stringify({ Body: line })
+            : `{"Body":${line}}`
+        })
+        .join(',')
+      debug(`events =`, events)
+
+      const req = https.request(bulkOptions, callback(done))
+      req.on('error', (e) => {
+        console.error(`request error =`, e)
+        done()
+      })
+      req.write(`[${events}]`)
+      req.end()
+    },
+    write: function (line, enc, done) {
+      debug(`write: line =`, line)
+      debug(`write: typeof ===`, typeof line)
+      if (line) {
+        const req = https.request(options, callback(done))
         req.on('error', (e) => {
           console.error(`request error =`, e)
           done()
         })
-        req.write(body)
+        req.write(line)
         req.end()
       } else {
         done()
@@ -109,11 +140,11 @@ function start (opts) {
     return
   }
 
-  var ehn = opts['event-hub-namespace'] || process.env.PINO_EVENT_HUB_NAMESPACE
-  var eh = opts['event-hub'] || process.env.PINO_EVENT_HUB
-  var sapn = opts['shared-access-policy-name'] || process.env.PINO_SHARED_ACCESS_POLICY_NAME
-  var sapk = opts['shared-access-policy-key'] || process.env.PINO_SHARED_ACCESS_POLICY_KEY
-  var sas = opts['sas'] || process.env.PINO_SHARED_ACCESS_SIGNATURE
+  const ehn = opts['event-hub-namespace'] || process.env.PINO_EVENT_HUB_NAMESPACE
+  const eh = opts['event-hub'] || process.env.PINO_EVENT_HUB
+  const sapn = opts['shared-access-policy-name'] || process.env.PINO_SHARED_ACCESS_POLICY_NAME
+  const sapk = opts['shared-access-policy-key'] || process.env.PINO_SHARED_ACCESS_POLICY_KEY
+  const sas = opts['sas'] || process.env.PINO_SHARED_ACCESS_SIGNATURE
 
   if (!ehn || !eh || !sapn || (!sas && !sapk) ) {
     console.log(fs.readFileSync(path.join(__dirname, './usage.txt'), 'utf8'))
@@ -128,14 +159,14 @@ function start (opts) {
     return
   }
 
-  var now = new Date()
-  var week = 60*60*24*7
-  var host = 'https://' + ehn + '.servicebus.windows.net'
-  // var path = eh
-  var uri = encodeURIComponent(host + '/' + eh)
-  var se = opts.expiry || process.env.PINO_SAS_EXPIRY
+  const now = new Date()
+  const week = 60*60*24*7
+  const host = 'https://' + ehn + '.servicebus.windows.net'
+  //  path = eh
+  const uri = encodeURIComponent(host + '/' + eh)
+  const se = opts.expiry || process.env.PINO_SAS_EXPIRY
     || Math.round(now.getTime() / 1000) + week
-  var options = Object.assign(opts, {
+  const options = Object.assign(opts, {
     host,
     eh,
     sr: uri,
