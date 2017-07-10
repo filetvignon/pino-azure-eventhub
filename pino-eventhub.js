@@ -73,6 +73,7 @@ function pinoEventHub (opts) {
     objectMode: true,
     highWaterMark: opts['bulk-size'] || 500,
     writev: function (lines, done) {
+      // https://docs.microsoft.com/en-us/rest/api/eventhub/send-batch-events
       const events = lines
         .map(line => {
           // check if console output is a string or object
