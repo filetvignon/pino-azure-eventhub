@@ -1,7 +1,7 @@
 # pino-eventhub
 
 Load [pino](https://github.com/pinojs/pino) logs into
-[Event Hub](https://www.elastic.co/products/eventhub).
+an [Event Hub](https://docs.microsoft.com/en-us/azure/event-hubs/event-hubs-what-is-event-hubs).
 
 ## Install
 
