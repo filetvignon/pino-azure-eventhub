@@ -55,12 +55,20 @@ function pinoEventHub (opts) {
 
   function callback(done) {
     return function inner(response) {
+      debug('response.statusCode =', response.statusCode)
+      debug('response.statusMessage =', response.statusMessage)
+
       if (response.statusCode != 201) {
         // splitter.emit(`response error =`, response.statusMessage)
         console.log(`response error =`, response.statusMessage)
       }
 
+      response.on('data', function (data) {
+        debug('data =', data)
+      })
+
       response.on('end', function () {
+        debug('call completed')
         done()
       })
     }
