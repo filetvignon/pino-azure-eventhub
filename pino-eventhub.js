@@ -41,7 +41,7 @@ function pinoEventHub (opts) {
     method: 'POST',
     host: opts.host.slice(8), // remove 'https://'
     port: opts.port,
-    path: '/' + opts.eh + '/messages',
+    path: '/' + opts.eh + '/messages?timeout=60&api-version=2014-01',
     headers: {
       Authorization: 'SharedAccessSignature sr=' + opts.sr + '&sig=' + opts.sig + '&se=' + opts.se + '&skn=' + opts.skn,
       'Content-Type': 'application/atom+xml;type=entry;charset=utf-8',
