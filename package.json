@@ -24,6 +24,7 @@
   "dependencies": {
     "crypto": "^0.0.3",
     "debug": "^2.6.8",
+    "fast-json-parse": "^1.0.2",
     "fs": "^0.0.1-security",
     "https": "^1.0.0",
     "minimist": "^1.2.0",
