@@ -80,9 +80,10 @@ function pinoEventHub (opts) {
   const writable = new Writable({
     objectMode: true,
     highWaterMark: opts['bulk-size'] || 500,
-    writev: function (lines, done) {
+    writev: function (blocks, done) {
       // https://docs.microsoft.com/en-us/rest/api/eventhub/send-batch-events
-      const events = lines
+      const events = blocks
+        .map(block => block.chunk)
         .map(line => {
           // check if console output is a string or object
           const parsed = new Parse(line)
