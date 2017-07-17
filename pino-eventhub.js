@@ -64,7 +64,7 @@ function pinoEventHub (opts) {
       }
 
       response.on('data', function (data) {
-        debug('data =', data)
+        debug('data =', data.toString())
       })
 
       response.on('end', function () {
@@ -89,17 +89,18 @@ function pinoEventHub (opts) {
           const parsed = new Parse(line)
           return (parsed.err)
             ? JSON.stringify({ Body: line })
-            : `{"Body":${line}}`
+            : `{"UserProperties":${line}}`
         })
         .join(',')
-      debug(`events =`, events)
+      const body = `[${events}]`
+      debug(`body =`, body)
 
       const req = https.request(bulkOptions, callback(done))
       req.on('error', (e) => {
         console.error(`request error =`, e)
         done()
       })
-      req.write(`[${events}]`)
+      req.write(body)
       req.end()
     },
     write: function (line, enc, done) {
