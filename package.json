@@ -20,6 +20,9 @@
     "hub"
   ],
   "author": "Dr. Jan-Jan van der Vyver <jan.jan.code@gmail.com>",
+  "contributors": [
+    "Ron Litzenberger (https://github.com/litzenberger)"
+   ],
   "license": "MIT",
   "dependencies": {
     "crypto": "^0.0.3",
