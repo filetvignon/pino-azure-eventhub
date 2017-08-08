@@ -1,12 +1,9 @@
 #! /usr/bin/env node
 'use strict'
 
-const minimist = require('minimist')
 const Writable = require('readable-stream').Writable
 const split = require('split2')
 const pump = require('pump')
-const fs = require('fs')
-const path = require('path')
 const utf8 = require('utf8')
 const crypto = require('crypto')
 const https = require('https')
@@ -14,7 +11,7 @@ const debug = require('debug')('pino-eventhub')
 const Parse = require('fast-json-parse')
 
 function giveSecurityWarning () {
-  console.warn("It is poor security practice to share your Shared Access Policy Key. It is better to calculate the Shared Access Signature, and share that.")
+  console.warn('It is poor security practice to share your Shared Access Policy Key. It is better to calculate the Shared Access Signature, and share that.')
   console.log("'pino-eventhub.createSignature' can be used to calculate the Shared Access Signature.")
 }
 
@@ -36,7 +33,6 @@ function pinoEventHub (opts) {
     return line
   })
 
-  const url = decodeURIComponent(opts.sr) + '/messages'
   const options = {
     method: 'POST',
     host: opts.host.slice(8), // remove 'https://'
@@ -44,7 +40,7 @@ function pinoEventHub (opts) {
     path: '/' + opts.eh + '/messages?timeout=60&api-version=2014-01',
     headers: {
       Authorization: 'SharedAccessSignature sr=' + opts.sr + '&sig=' + opts.sig + '&se=' + opts.se + '&skn=' + opts.skn,
-      'Content-Type': 'application/atom+xml;type=entry;charset=utf-8',
+      'Content-Type': 'application/atom+xml;type=entry;charset=utf-8'
     }
   }
 
@@ -53,12 +49,12 @@ function pinoEventHub (opts) {
   const bulkOptions = Object.assign({}, options,
     { headers: bulkHeaders })
 
-  function callback(done) {
-    return function inner(response) {
+  function callback (done) {
+    return function inner (response) {
       debug('response.statusCode =', response.statusCode)
       debug('response.statusMessage =', response.statusMessage)
-      if (response.statusCode != 201) {
-        splitter.emit('error', new Error(response.statusCode ))
+      if (response.statusCode !== 201) {
+        splitter.emit('error', new Error(response.statusCode))
       }
 
       response.on('data', function (data) {
@@ -71,9 +67,6 @@ function pinoEventHub (opts) {
       })
     }
   }
-
-  const index = opts.index || 'pino'
-  const type = opts.type || 'log'
 
   const writable = new Writable({
     objectMode: true,
@@ -114,18 +107,16 @@ function pinoEventHub (opts) {
       } else {
         done()
       }
-    },
+    }
   })
 
-  pump(splitter,writable)
+  pump(splitter, writable)
 
   return splitter
-  
 }
-
 
 module.exports = {
   createSignature: createSignature,
   pinoEventHub: pinoEventHub,
+  giveSecurityWarning: giveSecurityWarning
 }
-

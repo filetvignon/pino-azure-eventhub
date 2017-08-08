@@ -2,16 +2,9 @@
 'use strict'
 
 const minimist = require('minimist')
-const Writable = require('readable-stream').Writable
-const split = require('split2')
 const pump = require('pump')
 const fs = require('fs')
 const path = require('path')
-const utf8 = require('utf8')
-const crypto = require('crypto')
-const https = require('https')
-const debug = require('debug')('pino-eventhub')
-const Parse = require('fast-json-parse')
 const pinoeh = require('./pino-eventhub')
 
 function start (opts) {
@@ -31,11 +24,11 @@ function start (opts) {
   const sapk = opts['shared-access-policy-key'] || process.env.PINO_SHARED_ACCESS_POLICY_KEY
   const sas = opts['sas'] || process.env.PINO_SHARED_ACCESS_SIGNATURE
 
-  if (!ehn || !eh || !sapn || (!sas && !sapk) ) {
+  if (!ehn || !eh || !sapn || (!sas && !sapk)) {
     console.log(fs.readFileSync(path.join(__dirname, './usage.txt'), 'utf8'))
     console.log("  1 or more missing required parameters 'event-hub-namespace', 'event-hub', 'shared-access-policy-name' and  'sas'.")
     if (!sas) {
-      giveSecurityWarning()
+      pinoeh.giveSecurityWarning()
     }
     return
   }
@@ -45,19 +38,19 @@ function start (opts) {
   }
 
   const now = new Date()
-  const week = 60*60*24*7
+  const week = 60 * 60 * 24 * 7
   const host = 'https://' + ehn + '.servicebus.windows.net'
   //  path = eh
   const uri = encodeURIComponent(host + '/' + eh)
-  const se = opts.expiry || process.env.PINO_SAS_EXPIRY
-    || Math.round(now.getTime() / 1000) + week
+  const se = opts.expiry || process.env.PINO_SAS_EXPIRY ||
+    Math.round(now.getTime() / 1000) + week
   const options = Object.assign(opts, {
     host,
     eh,
     sr: uri,
     sig: sas || pinoeh.createSignature(uri, se, sapk, true),
     se,
-    skn: sapn,
+    skn: sapn
   })
 
   pump(process.stdin, pinoeh.pinoEventHub(options))
@@ -75,11 +68,11 @@ if (require.main === module) {
       'expiry': 'x',
       'sas': 'a',
       'bulk-size': 'b',
-      'port': 'p',
+      'port': 'p'
     },
     default: {
       port: 443,
-      'bulk-size': 500,
+      'bulk-size': 500
     }
   }))
 }
