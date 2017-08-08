@@ -40,7 +40,7 @@ lab.experiment('Pino Event Hub', () => {
         });
         lab.test('returns done', (done) => {
             const sig = pino.createSignature(uri, se, sapk, true);
-            console.log(sig)
+            expect(sig).to.exist()
             done();
         });
 
