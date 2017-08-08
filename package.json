@@ -9,7 +9,8 @@
   "scripts": {
     "lint": "standard --fix",
     "start": "node start.js",
-    "test": "lab -c -m 5000 --leaks"
+    "test": "lab -c -m 5000 --leaks",
+     "coveralls": "lab -c -m 5000 --leaks -t 90 -r lcov | coveralls"
   },
   "keywords": [
     "pino",
@@ -40,6 +41,7 @@
   },
   "devDependencies": {
     "code": "^4.1.0",
+    "coveralls": "^2.13.1",
     "lab": "^11.2.2",
     "standard": "^10.0.3"
   },
