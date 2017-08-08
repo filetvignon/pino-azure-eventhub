@@ -9,7 +9,7 @@
   "scripts": {
     "lint": "standard --fix",
     "start": "node start.js",
-    "test": "lab -c -m 5000"
+    "test": "lab -c -m 5000 --leaks"
   },
   "keywords": [
     "pino",
