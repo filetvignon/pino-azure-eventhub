@@ -59,7 +59,6 @@ function pinoEventHub (opts) {
       debug('response.statusMessage =', response.statusMessage)
       if (response.statusCode != 201) {
         splitter.emit('error', new Error(response.statusCode ))
-        console.log('Error',response.statusMessage)
       }
 
       response.on('data', function (data) {
