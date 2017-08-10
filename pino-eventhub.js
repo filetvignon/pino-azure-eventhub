@@ -10,6 +10,8 @@ const https = require('https')
 const debug = require('debug')('pino-eventhub')
 const Parse = require('fast-json-parse')
 
+
+
 function giveSecurityWarning () {
   console.warn('It is poor security practice to share your Shared Access Policy Key. It is better to calculate the Shared Access Signature, and share that.')
   console.log("'pino-eventhub.createSignature' can be used to calculate the Shared Access Signature.")
@@ -28,7 +30,7 @@ function createSignature (uri, ttl, sapk, warn) {
   return encodeURIComponent(hash)
 }
 
-function pinoEventHub (opts) {
+function pinoEventHub (opts, keepAliveAgent, sockets) {
   const splitter = split(function (line) {
     return line
   })
@@ -37,6 +39,7 @@ function pinoEventHub (opts) {
     method: 'POST',
     host: opts.host.slice(8), // remove 'https://'
     port: opts.port,
+    agent: keepAliveAgent,
     path: '/' + opts.eh + '/messages?timeout=60&api-version=2014-01',
     headers: {
       Authorization: 'SharedAccessSignature sr=' + opts.sr + '&sig=' + opts.sig + '&se=' + opts.se + '&skn=' + opts.skn,
@@ -102,6 +105,15 @@ function pinoEventHub (opts) {
         req.on('error', (e) => {
           console.error(`request error =`, e)
         })
+        req.on("socket", function (socket) {
+          if (sockets.indexOf(socket) === -1) {
+            debug("new socket created");
+            sockets.push(socket);
+            socket.on("close", function() {
+                debug.log("socket has been closed");
+            });
+          }
+        });
         req.write(line)
         req.end()
       } else {

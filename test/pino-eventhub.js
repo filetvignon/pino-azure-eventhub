@@ -4,8 +4,9 @@ const expect = require('code').expect
 const Lab = require('lab')
 const lab = exports.lab = Lab.script()
 const pino = require('../../pino-eventhub')
-var pump = require('pump')
-var fs = require('fs')
+const pump = require('pump')
+const fs = require('fs')
+const https = require('https')
 
 lab.experiment('Pino Event Hub', () => {
   let opts
@@ -19,6 +20,8 @@ lab.experiment('Pino Event Hub', () => {
   let se
   let host
   let uri
+  const agent = new https.Agent({ keepAlive: true ,maxSockets: 1});
+  const sockets = [];
 
   lab.beforeEach((done) => {
     opts = {}
@@ -51,7 +54,7 @@ lab.experiment('Pino Event Hub', () => {
       se,
       skn: sapn
     })
-    pump(source, pino.pinoEventHub(options), function (err) {
+    pump(source, pino.pinoEventHub(options, agent, sockets), function (err) {
       expect(err).to.exist()
       expect(err.message).to.contain('premature close')
       done()
@@ -71,7 +74,7 @@ lab.experiment('Pino Event Hub', () => {
       se,
       skn: sapn
     })
-    pump(source, pino.pinoEventHub(options), function (err) {
+    pump(source, pino.pinoEventHub(options,agent, sockets), function (err) {
       expect(err).to.exist()
       expect(err.message).to.equal('401')
       done()
