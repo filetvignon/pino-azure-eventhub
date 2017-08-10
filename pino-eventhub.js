@@ -110,7 +110,7 @@ function pinoEventHub (opts, keepAliveAgent, sockets) {
             debug("new socket created");
             sockets.push(socket);
             socket.on("close", function() {
-                debug.log("socket has been closed");
+                debug("socket has been closed");
             });
           }
         });
