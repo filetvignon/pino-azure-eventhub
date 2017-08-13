@@ -6,7 +6,6 @@ const lab = exports.lab = Lab.script()
 const pino = require('../../pino-eventhub')
 const pump = require('pump')
 const fs = require('fs')
-const https = require('https')
 
 lab.experiment('Pino Event Hub', () => {
   let opts
@@ -20,8 +19,6 @@ lab.experiment('Pino Event Hub', () => {
   let se
   let host
   let uri
-  const agent = new https.Agent({ keepAlive: true ,maxSockets: 1});
-  const sockets = [];
 
   lab.beforeEach((done) => {
     opts = {}
@@ -42,6 +39,7 @@ lab.experiment('Pino Event Hub', () => {
   lab.test('returns done', (done) => {
     const sig = pino.createSignature(uri, se, sapk, true)
     expect(sig).to.exist()
+    console.log(sig)
     done()
   })
 
@@ -54,9 +52,9 @@ lab.experiment('Pino Event Hub', () => {
       se,
       skn: sapn
     })
-    pump(source, pino.pinoEventHub(options, agent, sockets), function (err) {
+    pump(source, pino.pinoEventHub(options), function (err) {
       expect(err).to.exist()
-      expect(err.message).to.contain('premature close')
+      expect(err.message).to.equal('premature close')
       done()
     })
 
@@ -74,7 +72,7 @@ lab.experiment('Pino Event Hub', () => {
       se,
       skn: sapn
     })
-    pump(source, pino.pinoEventHub(options,agent, sockets), function (err) {
+    pump(source, pino.pinoEventHub(options), function (err) {
       expect(err).to.exist()
       expect(err.message).to.equal('401')
       done()

@@ -8,7 +8,6 @@ const path = require('path')
 const pinoeh = require('./pino-eventhub')
 const https = require('https')
 
-
 function start (opts) {
   if (opts.help) {
     console.log(fs.readFileSync(path.join(__dirname, './usage.txt'), 'utf8'))
@@ -25,9 +24,7 @@ function start (opts) {
   const sapn = opts['shared-access-policy-name'] || process.env.PINO_SHARED_ACCESS_POLICY_NAME
   const sapk = opts['shared-access-policy-key'] || process.env.PINO_SHARED_ACCESS_POLICY_KEY
   const sas = opts['sas'] || process.env.PINO_SHARED_ACCESS_SIGNATURE
-  const agent = new https.Agent({ keepAlive: true ,maxSockets: 1});
-
-  const sockets = [];
+  const agent = new https.Agent({keepAlive: true, maxSockets: 1})
 
   if (!ehn || !eh || !sapn || (!sas && !sapk)) {
     console.log(fs.readFileSync(path.join(__dirname, './usage.txt'), 'utf8'))
@@ -54,11 +51,12 @@ function start (opts) {
     eh,
     sr: uri,
     sig: sas || pinoeh.createSignature(uri, se, sapk, true),
+    agent: agent,
     se,
     skn: sapn
   })
 
-  pump(process.stdin, pinoeh.pinoEventHub(options,agent,sockets))
+  pump(process.stdin, pinoeh.pinoEventHub(options))
 }
 
 if (require.main === module) {
