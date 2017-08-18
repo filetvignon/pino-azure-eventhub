@@ -26,7 +26,6 @@ function start (opts) {
   const sapk = opts['shared-access-policy-key'] || process.env.PINO_SHARED_ACCESS_POLICY_KEY
   const sas = opts['sas'] || process.env.PINO_SHARED_ACCESS_SIGNATURE
   const max = opts['max'] || socketCount
-  const agent = new https.Agent({keepAlive: true, maxSockets: max})
 
   if (!ehn || !eh || !sapn || (!sas && !sapk)) {
     console.log(fs.readFileSync(path.join(__dirname, './usage.txt'), 'utf8'))
@@ -53,7 +52,6 @@ function start (opts) {
     eh,
     sr: uri,
     sig: sas || pinoeh.createSignature(uri, se, sapk, true),
-    agent: agent,
     se,
     skn: sapn
   })
