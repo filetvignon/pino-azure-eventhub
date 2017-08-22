@@ -5,7 +5,8 @@ const minimist = require('minimist')
 const pump = require('pump')
 const fs = require('fs')
 const path = require('path')
-const pinoeh = require('./pino-eventhub')
+const pinoEventHub = require('./pino-eventhub')
+const socketCount = 10
 
 function start (opts) {
   if (opts.help) {
@@ -23,12 +24,13 @@ function start (opts) {
   const sapn = opts['shared-access-policy-name'] || process.env.PINO_SHARED_ACCESS_POLICY_NAME
   const sapk = opts['shared-access-policy-key'] || process.env.PINO_SHARED_ACCESS_POLICY_KEY
   const sas = opts['sas'] || process.env.PINO_SHARED_ACCESS_SIGNATURE
+  const max = opts['max'] || socketCount
 
   if (!ehn || !eh || !sapn || (!sas && !sapk)) {
     console.log(fs.readFileSync(path.join(__dirname, './usage.txt'), 'utf8'))
     console.log("  1 or more missing required parameters 'event-hub-namespace', 'event-hub', 'shared-access-policy-name' and  'sas'.")
     if (!sas) {
-      pinoeh.giveSecurityWarning()
+      pinoEventHub.giveSecurityWarning()
     }
     return
   }
@@ -48,12 +50,13 @@ function start (opts) {
     host,
     eh,
     sr: uri,
-    sig: sas || pinoeh.createSignature(uri, se, sapk, true),
+    sig: sas || pinoEventHub.createSignature(uri, se, sapk, true),
     se,
-    skn: sapn
+    skn: sapn,
+    max: max
   })
 
-  pump(process.stdin, pinoeh.pinoEventHub(options))
+  pump(process.stdin, pinoEventHub(options))
 }
 
 if (require.main === module) {

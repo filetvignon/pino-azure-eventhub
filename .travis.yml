@@ -10,6 +10,10 @@ env:
   - NODE_ENV=test
   - PINO_EVENT_HUB_NAMESPACE=pinoeventhubns
   - PINO_EVENT_HUB=pinoeventhub
-  - PINO_SHARED_ACCESS_POLICY_NAME=sendPinoEvent 
-  - secure: NWCKKPmwiUJDzeI0tuG9EyOMZ1M8we2yDeG++Qftwk9pYjsOdT2ln6nZEYYMZbZIgMHHhoSfB/F6+ayNWn8fJU7b+WYma2lZjrNqii1szWKrAKKp4BW2Popm/fbl/7btUCrONsOQxA8x9XN8dK3dI0ocdu88eNFd7eRzJrUlOj+DgOto7bJfCnnDCqmAAohR0nD0FzYIRlxvj+w/ze4I60DU3cYdDraOEgw9VzrJx0iTm2cnDgMY3wNFiO5QTcQ6iND73gN7SnG3u/nOgUnTXnhqwX9b4LINe78sSCoKabeLj2gSw66epXQGyJL3VlELGajdBom46GwdJcBS8/iX7h82RZBlsIrNA+jFKEoW7Wehdguv0DKNHlFG+O5qkM++upEMezjTw5nX4f8CLGd4ffrz5JCen5IjBbxafTmZ7ts85tAlrOG9YunxxgySZKEh4mWONdS7jVVKFVEhDXdzfVzHNs4VQ133lrT2JBN21u3QoAlXBshiHdXnlJ5S+nes4r0qQliqKiCtTGOzxD9+hGj9bnhzi0GaUt0W4WAIOd5Y7rh3BMKaDHppIsrHEzRetT38Vf2YxvoRAbZ8Di5qX54SRVJKj2wE6TDdCDdaceWiKsabRlmVd7qWY6mQDFQ2i96JytOad0AAn1RL77PCKaaXpelBKldiXVPtJAj5wqA=
+  - PINO_SHARED_ACCESS_POLICY_NAME=sendPinoEvent
+script:
+  - npm run lint
+  - npm run test
 
+after_script:
+  - npm run coveralls

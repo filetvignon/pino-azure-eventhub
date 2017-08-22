@@ -9,7 +9,7 @@
   "scripts": {
     "lint": "standard --fix",
     "start": "node start.js",
-    "test": "lab -c -m 5000 --leaks",
+    "test": "standard && lab -c -m 5000 --leaks",
      "coveralls": "lab -c -m 5000 --leaks -t 90 -r lcov | coveralls"
   },
   "keywords": [

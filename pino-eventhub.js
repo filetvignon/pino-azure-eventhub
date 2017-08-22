@@ -9,6 +9,7 @@ const crypto = require('crypto')
 const https = require('https')
 const debug = require('debug')('pino-eventhub')
 const Parse = require('fast-json-parse')
+const socketCount = 10
 
 function giveSecurityWarning () {
   console.warn('It is poor security practice to share your Shared Access Policy Key. It is better to calculate the Shared Access Signature, and share that.')
@@ -32,11 +33,12 @@ function pinoEventHub (opts) {
   const splitter = split(function (line) {
     return line
   })
-
+  const agent = new https.Agent({keepAlive: true, maxSockets: opts.max || socketCount})
   const options = {
     method: 'POST',
     host: opts.host.slice(8), // remove 'https://'
     port: opts.port,
+    agent: agent,
     path: '/' + opts.eh + '/messages?timeout=60&api-version=2014-01',
     headers: {
       Authorization: 'SharedAccessSignature sr=' + opts.sr + '&sig=' + opts.sig + '&se=' + opts.se + '&skn=' + opts.skn,
@@ -114,9 +116,6 @@ function pinoEventHub (opts) {
 
   return splitter
 }
-
-module.exports = {
-  createSignature: createSignature,
-  pinoEventHub: pinoEventHub,
-  giveSecurityWarning: giveSecurityWarning
-}
+module.exports = pinoEventHub
+module.exports.createSignature = createSignature
+module.exports.giveSecurityWarning = giveSecurityWarning
