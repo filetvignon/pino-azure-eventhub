@@ -1,6 +1,6 @@
 {
   "name": "pino-eventhub",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "Pipe pino logs to Azure Event Hub",
   "main": "pino-eventhub",
   "bin": {
@@ -10,7 +10,7 @@
     "lint": "standard --fix",
     "start": "node start.js",
     "test": "standard && lab -c -m 5000 --leaks",
-     "coveralls": "lab -c -m 5000 --leaks -t 90 -r lcov | coveralls"
+    "coveralls": "lab -c -m 5000 --leaks -t 90 -r lcov | coveralls"
   },
   "keywords": [
     "pino",
@@ -28,7 +28,6 @@
   "license": "MIT",
   "dependencies": {
     "base64-stream": "^0.1.3",
-    "crypto": "^0.0.3",
     "debug": "^2.6.8",
     "fast-json-parse": "^1.0.2",
     "fs": "^0.0.1-security",
