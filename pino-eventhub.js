@@ -6,7 +6,6 @@ const split = require("split2");
 const crypto = require("crypto");
 const https = require("https");
 const debug = require("debug")("pino-eventhub");
-const Parse = require("fast-json-parse");
 const socketCount = 10;
 
 function giveSecurityWarning() {
@@ -32,29 +31,41 @@ function createSignature(uri, ttl, sapk, warn) {
 }
 
 function pinoEventHub(opts) {
+  const {
+    host,
+    port,
+    eh,
+    sr,
+    sig,
+    se,
+    skn,
+    max,
+    ["bulk-size"]: bulkSize,
+  } = opts;
+
   const splitter = split(function (line) {
     return line;
   });
   const agent = new https.Agent({
     keepAlive: true,
-    maxSockets: opts.max || socketCount,
+    maxSockets: max || socketCount,
   });
   const options = {
     method: "POST",
-    host: opts.host.slice(8), // remove 'https://'
-    port: opts.port,
+    host: host.slice(8), // remove 'https://'
+    port: port,
     agent: agent,
-    path: "/" + opts.eh + "/messages?timeout=60&api-version=2014-01",
+    path: "/" + eh + "/messages?timeout=60&api-version=2014-01",
     headers: {
       Authorization:
         "SharedAccessSignature sr=" +
-        opts.sr +
+        sr +
         "&sig=" +
-        opts.sig +
+        sig +
         "&se=" +
-        opts.se +
+        se +
         "&skn=" +
-        opts.skn,
+        skn,
       "Content-Type": "application/atom+xml;type=entry;charset=utf-8",
     },
   };
@@ -85,20 +96,14 @@ function pinoEventHub(opts) {
 
   const writable = new Writable({
     objectMode: true,
-    highWaterMark: opts["bulk-size"] || 500,
+    highWaterMark: bulkSize || 500,
     writev: function (blocks, done) {
       // https://docs.microsoft.com/en-us/rest/api/eventhub/send-batch-events
       const events = blocks
         .map((block) => block.chunk)
-        .map((line) => {
-          // check if console output is a string or object
-          const parsed = new Parse(line);
-          return parsed.err
-            ? JSON.stringify({ Body: line })
-            : `{"UserProperties":${line}}`;
-        })
-        .join(",");
-      const body = `[${events}]`;
+        .map((line) => ({ Body: line }));
+
+      const body = JSON.stringify(events);
       debug(`body =`, body);
 
       const req = https.request(bulkOptions, callback(done));

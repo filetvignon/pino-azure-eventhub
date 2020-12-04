@@ -32,6 +32,8 @@ function start(opts) {
   const url = opts["url"] || process.env.PINO_CONNECTION_URL;
   const max = opts["max"] || socketCount;
 
+  let host;
+
   if (!ehn || !eh || !sapn) {
     console.log(fs.readFileSync(path.join(__dirname, "./usage.txt"), "utf8"));
     console.log(
@@ -44,17 +46,23 @@ function start(opts) {
   }
 
   if (!ehn || !eh || !sapn || (!sas && !sapk)) {
-    console.log(fs.readFileSync(path.join(__dirname, "./usage.txt"), "utf8"));
-    console.log(
-      "  1 or more missing required parameters 'event-hub-namespace', 'event-hub', 'shared-access-policy-name' and  'sas'."
-    );
-    if (!sas) {
-      pinoEventHub.giveSecurityWarning();
+    if (!url) {
+      console.log(fs.readFileSync(path.join(__dirname, "./usage.txt"), "utf8"));
+      console.log(
+        "  1 or more missing required parameters 'event-hub-namespace', 'event-hub', 'shared-access-policy-name' and  'sas'."
+      );
+      if (!sas) {
+        pinoEventHub.giveSecurityWarning();
+      }
+      return;
     }
-    return;
+    const params = url.split(";");
   }
 
-  if (opts.expiry && (typeof opts.expiry !== "number" || isNaN(opts.expiry))) {
+  if (
+    opts.expiry &&
+    (typeof opts.expiry !== "number" || Number.isNaN(opts.expiry))
+  ) {
     console.log(`"expiry" should be in unix date format`);
     return;
   }
