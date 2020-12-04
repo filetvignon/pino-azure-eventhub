@@ -34,7 +34,7 @@ function start (opts) {
     }
     return
   }
-  if (opts.expiry && !Number.isNumber(opts.expiry)) {
+  if (opts.expiry && (typeof opts.expiry !== 'number' || Number.isNaN(opts.expiry))) {
     console.log(`"expiry" should be in unix date format`)
     return
   }
