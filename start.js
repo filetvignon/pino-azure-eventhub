@@ -46,7 +46,30 @@ function start(opts) {
   }
 
   if (!ehn || !eh || !sapn || (!sas && !sapk)) {
-    if (!url) {
+    if (url) {
+      const regex = new RegExp(
+        "Endpoint=sb://(?<Endpoint>[^;]*).servicebus.windows.net;SharedAccessKeyName=(?<SharedAccessKeyName>[^;]*);SharedAccessKey=(?<SharedAccessKey>[^;]*);EntityPath=(?<EntityPath>[^;]*)"
+      );
+
+      const regexMatch = regex.exec(url);
+
+      if (regexMatch && regexMatch.groups) {
+        const {
+          groups: {
+            endpoint,
+            sharedAccessKeyName,
+            sharedAccessKey,
+            entityPath,
+          },
+        } = regexMatch;
+        if (!ehn && endpoint) ehn = endpoint;
+        if (!eh && entityPath) eh = entityPath;
+        if (!sapn && sharedAccessKeyName) sapn = sharedAccessKeyName;
+        if (!sapk && !sas && sharedAccessKey) sapk = sharedAccessKey;
+      }
+    }
+
+    if (!ehn || !eh || !sapn || (!sas && !sapk)) {
       console.log(fs.readFileSync(path.join(__dirname, "./usage.txt"), "utf8"));
       console.log(
         "  1 or more missing required parameters 'event-hub-namespace', 'event-hub', 'shared-access-policy-name' and  'sas'."
@@ -56,7 +79,6 @@ function start(opts) {
       }
       return;
     }
-    const params = url.split(";");
   }
 
   if (
