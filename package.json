@@ -1,6 +1,6 @@
 {
   "name": "pino-azure-eventhub",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "[wip] Pipe pino logs to Azure Event Hub",
   "main": "pino-azure-eventhub",
   "bin": {
