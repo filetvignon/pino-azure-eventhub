@@ -9,6 +9,7 @@ const pinoEventHub = require("./pino-eventhub");
 const socketCount = 10;
 
 function start(opts) {
+  console.log(opts);
   if (opts.help) {
     console.log(fs.readFileSync(path.join(__dirname, "./usage.txt"), "utf8"));
     return;
@@ -32,21 +33,10 @@ function start(opts) {
   const url = opts["url"] || process.env.PINO_CONNECTION_URL;
   const max = opts["max"] || socketCount;
 
-  if (!ehn || !eh || !sapn) {
-    console.log(fs.readFileSync(path.join(__dirname, "./usage.txt"), "utf8"));
-    console.log(
-      "  1 or more missing required parameters 'event-hub-namespace', 'event-hub', 'shared-access-policy-name' and  'sas'."
-    );
-    if (!sas) {
-      pinoEventHub.giveSecurityWarning();
-    }
-    return;
-  }
-
   if (!ehn || !eh || !sapn || (!sas && !sapk)) {
     if (url) {
       const regex = new RegExp(
-        "Endpoint=sb://(?<Endpoint>[^;]*).servicebus.windows.net;SharedAccessKeyName=(?<SharedAccessKeyName>[^;]*);SharedAccessKey=(?<SharedAccessKey>[^;]*);EntityPath=(?<EntityPath>[^;]*)"
+        "Endpoint=sb://(?<endpoint>[^;]*).servicebus.windows.net/?;SharedAccessKeyName=(?<sharedAccessKeyName>[^;]*);SharedAccessKey=(?<sharedAccessKey>[^;]*)(;EntityPath=(?<entityPath>[^;]*))?"
       );
 
       const regexMatch = regex.exec(url);
@@ -105,7 +95,7 @@ function start(opts) {
     max: max,
   });
 
-  pipeline(process.stdin, pinoEventHub(options));
+  pipeline(process.stdin, pinoEventHub(options), () => {});
 }
 
 if (require.main === module) {

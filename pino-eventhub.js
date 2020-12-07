@@ -130,7 +130,7 @@ function pinoEventHub(opts) {
     },
   });
 
-  pipeline(splitter, writable);
+  pipeline(splitter, writable, () => {});
 
   return splitter;
 }
