@@ -9,7 +9,6 @@ const pinoEventHub = require("./pino-eventhub");
 const socketCount = 10;
 
 function start(opts) {
-  console.log(opts);
   if (opts.help) {
     console.log(fs.readFileSync(path.join(__dirname, "./usage.txt"), "utf8"));
     return;
@@ -20,7 +19,7 @@ function start(opts) {
     return;
   }
 
-  let eh = opts["event-hub"] || process.env.PINO_EVENT_HUB;
+  let eh = opts["event-hub"] || process.env.EVENT_HUB_NAME;
   let ehn = opts["event-hub-namespace"] || process.env.PINO_EVENT_HUB_NAMESPACE;
   let sapn =
     opts["shared-access-policy-name"] ||
@@ -30,7 +29,7 @@ function start(opts) {
     process.env.PINO_SHARED_ACCESS_POLICY_KEY;
   let sas = opts["sas"] || process.env.PINO_SHARED_ACCESS_SIGNATURE;
 
-  const url = opts["url"] || process.env.PINO_CONNECTION_URL;
+  const url = opts["url"] || process.env.EVENT_HUB_URL;
   const max = opts["max"] || socketCount;
 
   if (!ehn || !eh || !sapn || (!sas && !sapk)) {
@@ -60,11 +59,8 @@ function start(opts) {
     if (!ehn || !eh || !sapn || (!sas && !sapk)) {
       console.log(fs.readFileSync(path.join(__dirname, "./usage.txt"), "utf8"));
       console.log(
-        "  1 or more missing required parameters 'event-hub-namespace', 'event-hub', 'shared-access-policy-name' and  'sas'."
+        "  1 or more missing required parameters 'event-hub-namespace', 'event-hub', 'shared-access-policy-name' and 'sas' (or 'url' containing all parameters)."
       );
-      if (!sas) {
-        pinoEventHub.giveSecurityWarning();
-      }
       return;
     }
   }
@@ -77,19 +73,19 @@ function start(opts) {
     return;
   }
 
-  const week = 7 * 24 * 3600;
+  const year = 365 * 24 * 3600;
   const host = "https://" + ehn + ".servicebus.windows.net";
   //  path = eh
   const uri = encodeURIComponent(host + "/" + eh);
   const se =
     opts.expiry ||
     process.env.PINO_SAS_EXPIRY ||
-    Math.round(Date.now() / 1000) + week;
+    Math.round(Date.now() / 1000) + year;
   const options = Object.assign(opts, {
     host,
     eh,
     sr: uri,
-    sig: sas || pinoEventHub.createSignature(uri, se, sapk, true),
+    sig: sas || pinoEventHub.createSignature(uri, se, sapk),
     se,
     skn: sapn,
     max: max,

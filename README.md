@@ -34,11 +34,11 @@ npm install pino-eventhub -g
   -e  | --event-hub                  Required: the Event Hub; env var PINO_EVENT_HUB
   -n  | --shared-access-policy-name  Required: the Shared Access Policy Name; env var PINO_SHARED_ACCESS_POLICY_NAME
   -a  | --sas                        the Shared Access Signature; env var PINO_SHARED_ACCESS_SIGNATURE
-  -u  | --url                        the Connection String Url; env var PINO_CONNECTION_URL
   -x  | --expiry                     the expiry of the SAS, in unix time; env var PINO_SAS_EXPIRY; default 1 week from now
   -b  | --size                       the number of documents for each bulk insert
 
   -k  | --shared-access-policy-key   the Shared Access Policy Key; env var PINO_SHARED_ACCESS_POLICY_KEY
+  -u  | --url                        the Connection String Url; env var PINO_CONNECTION_URL
 
 ```
 

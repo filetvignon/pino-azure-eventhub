@@ -8,20 +8,7 @@ const https = require("https");
 const debug = require("debug")("pino-eventhub");
 const socketCount = 10;
 
-function giveSecurityWarning() {
-  console.warn(
-    "It is poor security practice to share your Shared Access Policy Key. It is better to calculate the Shared Access Signature, and share that."
-  );
-  console.log(
-    "'pino-eventhub.createSignature' can be used to calculate the Shared Access Signature."
-  );
-}
-
-function createSignature(uri, ttl, sapk, warn) {
-  if (warn) {
-    giveSecurityWarning();
-  }
-
+function createSignature(uri, ttl, sapk) {
   const signature = uri + "\n" + ttl;
   const hash = crypto
     .createHmac("sha256", sapk)
@@ -136,4 +123,3 @@ function pinoEventHub(opts) {
 }
 module.exports = pinoEventHub;
 module.exports.createSignature = createSignature;
-module.exports.giveSecurityWarning = giveSecurityWarning;
