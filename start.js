@@ -32,8 +32,6 @@ function start(opts) {
   const url = opts["url"] || process.env.PINO_CONNECTION_URL;
   const max = opts["max"] || socketCount;
 
-  let host;
-
   if (!ehn || !eh || !sapn) {
     console.log(fs.readFileSync(path.join(__dirname, "./usage.txt"), "utf8"));
     console.log(
