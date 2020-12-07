@@ -1,16 +1,13 @@
 {
-  "name": "pino-eventhub",
+  "name": "pino-azure-eventhub",
   "version": "0.1.0",
-  "description": "Pipe pino logs to Azure Event Hub",
-  "main": "pino-eventhub",
+  "description": "[wip] Pipe pino logs to Azure Event Hub",
+  "main": "pino-azure-eventhub",
   "bin": {
-    "pino-eventhub": "./start.js"
+    "pino-azure-eventhub": "./start.js"
   },
   "scripts": {
-    "lint": "standard --fix",
-    "start": "node start.js",
-    "test": "standard && lab -c -m 5000 --leaks",
-    "coveralls": "lab -c -m 5000 --leaks -t 90 -r lcov | coveralls"
+    "start": "node start.js"
   },
   "keywords": [
     "pino",
@@ -21,14 +18,10 @@
     "event",
     "hub"
   ],
-  "author": "Dr. Jan-Jan van der Vyver <jan.jan.code@gmail.com>",
-  "contributors": [
-    "Ron Litzenberger (https://github.com/litzenberger)"
-  ],
+  "author": "Felipe Vignon <felipe.vignon@gmail.com>",
   "license": "MIT",
   "dependencies": {
     "debug": "^2.6.8",
-    "fs": "^0.0.1-security",
     "minimist": "^1.2.0",
     "split2": "^2.1.1"
   },
@@ -40,10 +33,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pinojs/pino-eventhub.git"
+    "url": "git+https://github.com/filetvignon/pino-azure-eventhub.git"
   },
   "bugs": {
-    "url": "https://github.com/pinojs/pino-eventhub/issues"
+    "url": "https://github.com/filetvignon/pino-azure-eventhub/issues"
   },
-  "homepage": "https://github.com/pinojs/pino-eventhub#readme"
+  "homepage": "https://github.com/filetvignon/pino-azure-eventhub#readme"
 }
